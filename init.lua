@@ -1,6 +1,7 @@
 require "paq" {
     "savq/paq-nvim";
     "OmniSharp/omnisharp-vim";
+    "Hoffs/omnisharp-extended-lsp.nvim";
     "preservim/nerdtree";
     "dense-analysis/ale";
     "BurntSushi/ripgrep";
@@ -17,7 +18,8 @@ local wo = vim.wo
 local g = vim.g
 local opt = vim.opt
 
-wo.number = true -- show line numbers
+vim.o.number = true
+vim.o.relativenumber = true
 g.OmniSharp_server_use_net6 = 1
 opt.wrap = false -- no text wrap
 opt.backup = false -- no annoying backup file
@@ -40,7 +42,6 @@ vim.cmd([[
 ]])
 
 vim.cmd('command NT NERDTree');
-vim.cmd('command FN Telescope find_files');
 vim.cmd('command FT Telescope live_grep');
 
 require('nightfox').setup({
@@ -51,4 +52,34 @@ require('nightfox').setup({
 
 vim.cmd("colorscheme carbonfox");
 
+vim.keymap.set("n", "<leader>iu", function()
+  vim.lsp.buf.code_action({
+    context = { only = { "source.addMissingImports" } },
+    apply = true,
+  })
+end, { desc = "Add missing imports" })
 
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+
+require('telescope').setup {
+  defaults = {
+    mappings = {
+      i = { -- Insert mode mappings
+        ["<C-t>"] = function(prompt_bufnr)
+          local action = require('telescope.actions')
+          action.select_tab(prompt_bufnr) -- Opens the selected file in a new tab
+        end,
+      },
+      n = { -- Normal mode mappings
+        ["<C-t>"] = function(prompt_bufnr)
+          local action = require('telescope.actions')
+          action.select_tab(prompt_bufnr)
+        end,
+      },
+    },
+  },
+}
