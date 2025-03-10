@@ -10,7 +10,8 @@ require "paq" {
     "prabirshrestha/asyncomplete.vim";
     "mhinz/vim-signify";
     {"neoclide/coc.nvim", branch="release"};
-    "EdenEast/nightfox.nvim"
+    "EdenEast/nightfox.nvim",
+    "folke/trouble.nvim"
 }
 
 
@@ -83,3 +84,18 @@ require('telescope').setup {
     },
   },
 }
+
+require("trouble").setup {
+  signs = {
+    error = "✘",
+    warning = "▲",
+    hint = "⚑",
+    information = "»",
+  },
+  use_diagnostic_signs = true, -- Use LSP diagnostic signs
+}
+
+vim.keymap.set("n", "<leader>tf", function()
+  require("trouble").open("diagnostics") -- Opens diagnostics view
+  require("trouble").focus()             -- Focuses the Trouble window
+end, { desc = "Open and focus Trouble diagnostics" })
